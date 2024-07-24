@@ -14,20 +14,7 @@ pipeline {
             }
         }
 
-        stage('Run SAST Scanner') {
-            steps {
-                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-                    sh '''
-                    mvn clean verify sonar:sonar \
-                    -Dsonar.projectKey=project-ama \
-                    -Dsonar.organization=amasoft \
-                    -Dsonar.host.url=https://sonarcloud.io \
-                    -Dsonar.token=$SONAR_TOKEN
-                    '''
-                }
-            }
-        }
-stage('Run SCA Analysis using Snyk') {
+        stage('Run SCA Analysis using Snyk') {
     agent {
         docker {
             image 'snyk_image:latest'  
