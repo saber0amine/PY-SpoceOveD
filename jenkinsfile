@@ -25,7 +25,7 @@ pipeline {
         withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
             sh '''	    
             snyk auth $SNYK_TOKEN
-            snyk monitor --all-projects
+            DEBUG=*snyk*  snyk monitor --all-projects
             '''
         }
     }
