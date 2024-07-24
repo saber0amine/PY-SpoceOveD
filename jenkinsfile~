@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'REPO_URL', defaultValue: 'https://github.com/saber0amine/SpoceOveD.git', description: 'Git repository URL')
+        string(name: 'REPO_URL', defaultValue: 'https://github.com/saber0amine/PY-SpoceOveD.git', description: 'Git repository URL')
         string(name: 'BRANCH', defaultValue: 'main', description: 'Git branch to build')
     }
 
