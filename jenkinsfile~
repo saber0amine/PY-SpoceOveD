@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'REPO_URL', defaultValue: 'https://github.com/saber0amine/SpoceOveD.git', description: 'Git repository URL')
+        string(name: 'BRANCH', defaultValue: 'main', description: 'Git branch to build')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                cleanWs()
+                git branch: params.BRANCH, url: params.REPO_URL
+            }
+        }
+
+        stage('Run SAST Scanner') {
+            steps {
+                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                    sh '''
+                    mvn clean verify sonar:sonar \
+                    -Dsonar.projectKey=project-ama \
+                    -Dsonar.organization=amasoft \
+                    -Dsonar.host.url=https://sonarcloud.io \
+                    -Dsonar.token=$SONAR_TOKEN
+                    '''
+                }
+            }
+        }
+stage('Run SCA Analysis using Snyk') {
+    agent {
+        docker {
+            image 'snyk_image:latest'  
+	    args '-v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker'           
+        }
+    }
+    steps {
+	sh 'chmod +x ./mvnw'
+        withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
+            sh '''	    
+            snyk auth $SNYK_TOKEN
+            snyk monitor --all-projects
+            '''
+        }
+    }
+}
+//         stage('Build') {
+//             steps {
+//                 sh 'mvn clean install -e'
+//             }
+//         }
+//
+//         stage('Test') {
+//             steps {
+//                 sh 'mvn test'
+//             }
+//         }
+//
+//         stage('Deploy') {
+//             steps {
+//                 echo 'Deploying the application'
+//             }
+//         }
+   }
+
+post {
+    failure {
+        sh '''
+        echo "All Docker containers:"
+        docker ps -a
+        echo "Recent Docker container logs:"
+        CONTAINER_ID=$(docker ps -aq | head -n 1)
+        if [ -n "$CONTAINER_ID" ]; then
+            docker logs $CONTAINER_ID
+        else
+            echo "No containers found"
+        fi
+        '''
+    }
+}
+
+}
