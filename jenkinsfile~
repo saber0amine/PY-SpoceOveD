@@ -35,9 +35,8 @@ stage('Run SAST Scanner') {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
             sh '''
             sonar-scanner \
-            -Dsonar.projectKey=flask-project \
-            -Dsonar.organization=yourorganization \
-            -Dsonar.sources=. \
+            -Dsonar.projectKey=project-ama \
+            -Dsonar.organization=amasoft \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=$SONAR_TOKEN
             '''
