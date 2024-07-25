@@ -56,7 +56,7 @@ stage('Run SAST Scanner') {
                     sh '''
 		    ls 
                     snyk auth $SNYK_TOKEN
-                    DEBUG=*snyk* snyk monitor --file=requirements.txt --debug 
+                    DEBUG=*snyk* snyk test --file=requirements.txt  
                     '''
                 }
             }
