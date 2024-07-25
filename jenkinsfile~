@@ -25,22 +25,25 @@ pipeline {
                 '''
             }
         }
-
-        stage('Run SAST Scanner') {
-            steps {
-                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-                    sh ''' 
-                    . venv/bin/activate
-                    sonar-scanner \\
-                    -Dsonar.projectKey=flask-project \\
-                    -Dsonar.organization=yourorganization \\
-                    -Dsonar.sources=. \\
-                    -Dsonar.host.url=https://sonarcloud.io \\
-                    -Dsonar.token=$SONAR_TOKEN
-                    '''
-                }
-            }
+stage('Run SAST Scanner') {
+    agent {
+        docker {
+            image 'sonarsource/sonar-scanner-cli:latest'
         }
+    }
+    steps {
+        withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+            sh '''
+            sonar-scanner \
+            -Dsonar.projectKey=flask-project \
+            -Dsonar.organization=yourorganization \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=$SONAR_TOKEN
+            '''
+        }
+    }
+}
 
         stage('Run SCA Analysis using Snyk') {
             agent {
