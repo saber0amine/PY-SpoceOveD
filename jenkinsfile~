@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'REPO_URL', defaultValue:'https://github.com/saber0amine/PY-SpoceOveD.git' , description: 'Git repository URL')
+        string(name: 'REPO_URL', defaultValue: 'https://github.com/saber0amine/PY-SpoceOveD.git', description: 'Git repository URL')
         string(name: 'BRANCH', defaultValue: 'master', description: 'Git branch to build')
     }
 
@@ -17,14 +17,14 @@ pipeline {
         stage('Setup Python Environment') {
             steps {
                 sh '''
-		apt install python3.11-venv
+                sudo apt-get update
+                sudo apt-get install -y python3.11-venv
                 python3 -m venv venv
                 . venv/bin/activate
                 pip install -r requirements.txt
                 '''
             }
         }
-
 
         stage('Run SAST Scanner') {
             steps {
@@ -52,7 +52,6 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
                     sh '''
-		    ls
                     snyk auth $SNYK_TOKEN
                     snyk test --all-projects
                     snyk monitor --all-projects
@@ -60,6 +59,7 @@ pipeline {
                 }
             }
         }
+        
         stage('Deploy') {
             steps {
                 echo 'Deploying the application'
