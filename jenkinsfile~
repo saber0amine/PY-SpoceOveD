@@ -58,9 +58,11 @@ stage('Run SAST Scanner') {
 		    apt-get update 
 		    apt-get install -y python3-venv
 		    python3  -m venv venv 
-		    . venv/bin/activate 
+		    . venv/bin/activate
+		    pip install -r requirements.txt 
                     snyk auth $SNYK_TOKEN
-                    DEBUG=*snyk* snyk test --file=requirements.txt  
+                    DEBUG=*snyk* snyk test --file=requirements.txt
+		    snyk monitor --file=requirements.txt  
                     '''
                 }
             }
