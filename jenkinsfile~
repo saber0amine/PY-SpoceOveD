@@ -54,7 +54,9 @@ stage('Run SAST Scanner') {
             steps {
                 withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
                     sh '''
-		    ls 
+		    ls
+		    python3  -m venv venv 
+		    . venv/bin/activate 
                     snyk auth $SNYK_TOKEN
                     DEBUG=*snyk* snyk test --file=requirements.txt  
                     '''
