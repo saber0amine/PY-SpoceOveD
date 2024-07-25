@@ -61,7 +61,8 @@ stage('Run SAST Scanner') {
 		    . venv/bin/activate
 		    pip install -r requirements.txt 
                     snyk auth $SNYK_TOKEN
-		    snyk monitor --file=requirements.txt || true
+                    DEBUG=*snyk* snyk test --file=requirements.txt
+		    snyk monitor --file=requirements.txt  
                     '''
                 }
             }
