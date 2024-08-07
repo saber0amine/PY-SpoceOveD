@@ -27,24 +27,27 @@ pipeline {
         }
 stage('Run SAST Scanner') {
     agent {
-        docker {
-            image 'sonarsource/sonar-scanner-cli:latest'
-        }
+       
     }
     steps {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-            sh '''
-            sonar-scanner \
-            -Dsonar.projectKey=project-ama \
-            -Dsonar.organization=amasoft \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.token=$SONAR_TOKEN
-	    -Dsonar.c.file.suffixes=- \
-	    -Dsonar.cpp.file.suffixes=- \
-	    -Dsonar.objc.file.suffixes=- \
-	    -Dsonar.python.version=3.x
+        	   
+    sh '''
+            docker run --rm \
+                -e SONAR_HOST_URL="https://sonarcloud.io" \
+                -e SONAR_TOKEN="$SONAR_TOKEN" \
+                -v "${WORKSPACE}:/usr/src" \
+                sonarsource/sonar-scanner-cli \
+                sonar-scanner \
+                -Dsonar.projectKey=project-ama \
+                -Dsonar.organization=amasoft \
+                -Dsonar.c.file.suffixes=- \
+                -Dsonar.cpp.file.suffixes=- \
+                -Dsonar.objc.file.suffixes=- \
+                -Dsonar.python.version=3.x
             '''
-        }
+
+	 }
     }
 }
 

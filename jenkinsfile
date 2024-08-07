@@ -26,9 +26,7 @@ pipeline {
             }
         }
 stage('Run SAST Scanner') {
-    agent {
-       
-    }
+   
     steps {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
         	   
