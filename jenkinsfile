@@ -39,6 +39,10 @@ stage('Run SAST Scanner') {
             -Dsonar.organization=amasoft \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=$SONAR_TOKEN
+	    -Dsonar.c.file.suffixes=- \
+	    -Dsonar.cpp.file.suffixes=- \
+	    -Dsonar.objc.file.suffixes=- \
+	    -Dsonar.python.version=3.x
             '''
         }
     }
@@ -77,7 +81,12 @@ stage('Run SAST Scanner') {
 
     post {
         always {
-            sh 'deactivate || true'
+                sh '''
+            if [ -f venv/bin/activate ]; then
+                . venv/bin/activate
+                deactivate
+            fi
+            '''
             cleanWs()
         }
         failure {
